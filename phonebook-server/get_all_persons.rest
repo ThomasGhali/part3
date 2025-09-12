@@ -13,11 +13,20 @@ Content-Type: application/json
   "number": "12-42-4657567"
 }
 
-### Wrong post
+### Wrong post (missing info)
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
   "name": "Thomas Ghali",
   "number": ""
+}
+
+### Wrong post (existing name)
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Arto Hellas",
+  "number": "21-98-65465435"
 }
