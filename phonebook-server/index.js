@@ -46,6 +46,18 @@ app.get('/api/persons', (request, response) => {
   response.json(persons);
 })
 
+app.get('/api/persons/:id', (request, response) => {
+  const id = request.params.id;
+  const person = persons.find(p => p.id === id);
+
+  if (!person) {
+    return response.status(404).json({ error: 'The person with that id is not found' })
+  }
+
+  response.json(person);
+
+})
+
 app.get('/info', (request, response) => {
   const time = new Date();
   response.send(`
