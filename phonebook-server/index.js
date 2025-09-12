@@ -76,5 +76,26 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end();
 })
 
+app.post('/api/persons', (request, response) => {
+  const body = request.body;
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({ error: "Missing information: name and number are required" })
+  }
+
+  // Create an object with given data and random id
+  const billion = 1000000000;
+  const randomId = Math.ceil(Math.random() * billion);
+
+  const newPerson = {
+    name: body.name,
+    number: body.number,
+    id: String(randomId)
+  }
+
+  persons = persons.concat(newPerson);
+  response.status(201).json(newPerson);
+})
+
 const PORT = 3001;
 app.listen(PORT, () => console.log(`Server on port: ${PORT}`))
