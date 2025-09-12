@@ -78,14 +78,17 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body;
-
+  
   if (!body.name || !body.number) {
-    return response.status(400).json({ error: "Missing information: name and number are required" })
+    return response.status(400).json({ error: 'Missing information: name and number are required' })
+  }
+  
+  const nameExists = persons.some(p => p.name === body.name)
+  if (nameExists) {
+    return response.status(400).json({ error: 'Name must be unique' })
   }
 
-  // Create an object with given data and random id
-  const billion = 1000000000;
-  const randomId = Math.ceil(Math.random() * billion);
+  const randomId = Math.ceil(Math.random() * 1000000000);
 
   const newPerson = {
     name: body.name,
