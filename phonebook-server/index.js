@@ -27,18 +27,31 @@ const persons = [
 app.use(express.json());
 
 app.get('/', (request, response) => {
-  response.status(200).send(
-    `<h1>Phonebook Backend Main Page</h1>
+  response.status(200).send(`
+    <h1>Phonebook Backend Main Page</h1>
     <h2>
-    go to 
-    <a href="http://localhost:3001/api/persons">persons</a> 
-    list on server
-    </h2>`
-  );
+      Go to 
+      <a href="http://localhost:3001/api/persons">persons</a> 
+      list on server.
+    </h2>
+    <h2>
+      Go to 
+      <a href="http://localhost:3001/info">server info</a> 
+      page.
+    <h2>
+  `);
 })
 
 app.get('/api/persons', (request, response) => {
   response.json(persons);
+})
+
+app.get('/info', (request, response) => {
+  const time = new Date();
+  response.send(`
+    <p>Phonebook has info for ${persons.length} people</p>
+    <p>${time}</p>
+  `)
 })
 
 const PORT = 3001;
