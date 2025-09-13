@@ -25,8 +25,15 @@ let persons = [
   }
 ]
 
-app.use(morgan('tiny'))
+const generalLog = morgan('tiny', {
+  skip: (req, res) => req.method === 'POST'
+})
+
+morgan.token('person', (req, res) => JSON.stringify(req.body))
+const postLog = morgan(':method :url :status :res[content-length] - :response-time[digits] ms :person');
+
 app.use(express.json());
+app.use(generalLog)
 
 
 app.get('/', (request, response) => {
@@ -79,7 +86,8 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end();
 })
 
-app.post('/api/persons', (request, response) => {
+
+app.post('/api/persons',postLog , (request, response) => {
   const body = request.body;
   
   if (!body.name || !body.number) {
