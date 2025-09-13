@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 
 let persons = [
@@ -24,7 +25,9 @@ let persons = [
   }
 ]
 
+app.use(morgan('tiny'))
 app.use(express.json());
+
 
 app.get('/', (request, response) => {
   response.status(200).send(`
