@@ -45,12 +45,12 @@ app.get('/', (request, response) => {
     <h1>Phonebook Backend Main Page</h1>
     <h2>
       Go to 
-      <a href="http://localhost:3001/api/persons">persons</a> 
+      <a href="https://carefree-abundance-production.up.railwayp/api/persons">persons</a> 
       list on server.
     </h2>
     <h2>
       Go to 
-      <a href="http://localhost:3001/info">server info</a> 
+      <a href="https://carefree-abundance-production.up.railway.app/info">server info</a> 
       page.
     <h2>
   `);
@@ -116,5 +116,5 @@ app.post('/api/persons',postLog , (request, response) => {
   response.status(201).json(newPerson);
 })
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server on port: ${PORT}`))
