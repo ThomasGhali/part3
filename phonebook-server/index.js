@@ -45,7 +45,7 @@ app.get('/', (request, response) => {
     <h1>Phonebook Backend Main Page</h1>
     <h2>
       Go to 
-      <a href="https://carefree-abundance-production.up.railwayp/api/persons">persons</a> 
+      <a href="https://carefree-abundance-production.up.railway.app/api/persons">persons</a> 
       list on server.
     </h2>
     <h2>
