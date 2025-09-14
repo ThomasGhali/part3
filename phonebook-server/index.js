@@ -1,6 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const app = express();
+
+app.use(express.json());
+app.use(cors({ origin: "http://localhost:5173" }));
 
 let persons = [
   { 
@@ -29,10 +33,10 @@ const generalLog = morgan('tiny', {
   skip: (req, res) => req.method === 'POST'
 })
 
+// :person custom token
 morgan.token('person', (req, res) => JSON.stringify(req.body))
 const postLog = morgan(':method :url :status :res[content-length] - :response-time[digits] ms :person');
 
-app.use(express.json());
 app.use(generalLog)
 
 
@@ -53,6 +57,7 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
+  console.log(persons)
   response.json(persons);
 })
 
