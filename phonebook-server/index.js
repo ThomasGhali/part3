@@ -1,12 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
-const cors = require('cors');
 const app = express();
 
 // Parse incoming json requests
 app.use(express.json());
-// Allow all browsers to access back-end responses
-app.use(cors());
 // Show front-end static content (build) from 'dist' dir
 app.use(express.static('dist'))
 
