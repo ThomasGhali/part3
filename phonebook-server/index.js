@@ -53,14 +53,19 @@ app.get('/info', (request, response) => {
   })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id;
-  const person = persons.find(p => p.id === id)
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      if (!result) {
+        response.status(404).end()
+      }
 
-  if (!person) return response.status(404).json({ error: 'Person not found in the list' })
-
-  persons = persons.filter(p => p.id !== id);
-  response.status(204).end();
+      response.status(204).end()
+    })
+    .catch(error => {
+      console.log(error.message)
+      response.status(404).send({ error: 'malformatted id'} )
+    })
 })
 
 
