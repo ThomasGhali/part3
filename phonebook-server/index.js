@@ -1,34 +1,13 @@
+require('dotenv').config()
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
+const Person = require('./models/person')
 
 // Parse incoming json requests
 app.use(express.json());
 // Show front-end static content (build) from 'dist' dir
 app.use(express.static('dist'))
-
-let persons = [
-  { 
-    "id": "1",
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": "2",
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": "3",
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": "4",
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
 
 const generalLog = morgan('tiny', {
   skip: (req, res) => req.method === 'POST'
@@ -39,7 +18,6 @@ morgan.token('person', (req, res) => JSON.stringify(req.body))
 const postLog = morgan(':method :url :status :res[content-length] - :response-time[digits] ms :person');
 
 app.use(generalLog)
-
 
 app.get('/', (request, response) => {
   response.status(200).send(`
@@ -58,28 +36,21 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  console.log(persons)
-  response.json(persons);
+  Person.find({}).then(result => response.json(result))
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id;
-  const person = persons.find(p => p.id === id);
-
-  if (!person) {
-    return response.status(404).json({ error: 'The person with that id is not found' })
-  }
-
-  response.json(person);
-
+  Person.findById(request.params.id).then(person => response(person))
 })
 
 app.get('/info', (request, response) => {
   const time = new Date();
-  response.send(`
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${time}</p>
-  `)
+  Person.countDocuments().then(count => {
+    response.send(`
+      <p>Phonebook has info for ${count} people</p>
+      <p>${time}</p>
+    `)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -100,21 +71,15 @@ app.post('/api/persons',postLog , (request, response) => {
     return response.status(400).json({ error: 'Missing information: name and number are required' })
   }
   
-  const nameExists = persons.some(p => p.name === body.name)
-  if (nameExists) {
-    return response.status(400).json({ error: 'Name must be unique' })
-  }
-
-  const randomId = Math.ceil(Math.random() * 1000000000);
-
-  const newPerson = {
-    id: String(randomId),
+  const newPerson = new Person({
     name: body.name,
-    number: body.number
-  }
+    number: body.number,
+  })
 
-  persons = persons.concat(newPerson);
-  response.status(201).json(newPerson);
+  newPerson.save().then(savedPerson => {
+    response.json(savedPerson)
+    console.log(`(✓) ${savedPerson.name}'s contact info saved in data based`)
+  })
 })
 
 const PORT = process.env.PORT || 3001;

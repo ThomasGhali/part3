@@ -1,0 +1,5 @@
+### Right delete
+DELETE http://localhost:3001/api/persons/2
+
+### Wrong delete
+DELETE http://localhost:3001/api/persons/5
