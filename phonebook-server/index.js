@@ -108,9 +108,9 @@ app.post('/api/persons',postLog , (request, response) => {
   const randomId = Math.ceil(Math.random() * 1000000000);
 
   const newPerson = {
+    id: String(randomId),
     name: body.name,
-    number: body.number,
-    id: String(randomId)
+    number: body.number
   }
 
   persons = persons.concat(newPerson);
