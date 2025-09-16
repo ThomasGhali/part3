@@ -23,7 +23,7 @@ app.get('/', (request, response) => {
   response.status(200).send(`
     <h1>Phonebook Backend Main Page</h1>
     <h2>
-      Go to 
+      Go to
       <a href="https://carefree-abundance-production.up.railway.app/api/persons">persons</a> 
       list on server.
     </h2>
@@ -35,41 +35,50 @@ app.get('/', (request, response) => {
   `);
 })
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(result => response.json(result))
+app.get('/api/persons', (request, response, next) => {
+  Person.find({})
+    .then(result => response.json(result))
+    .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => response(person))
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (!person) {
+        return response.status(404).end()
+      }
+
+      response.json(person)
+    })
+    .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   const time = new Date();
-  Person.countDocuments().then(count => {
-    response.send(`
-      <p>Phonebook has info for ${count} people</p>
-      <p>${time}</p>
-    `)
-  })
+  Person.countDocuments()
+    .then(count => {
+      response.send(`
+        <p>Phonebook has info for ${count} people</p>
+        <p>${time}</p>
+      `)
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then(result => {
       if (!result) {
-        response.status(404).end()
+        return response.status(404).end()
       }
 
       response.status(204).end()
     })
-    .catch(error => {
-      console.log(error.message)
-      response.status(404).send({ error: 'malformatted id'} )
-    })
+    .catch(error => next(error))
 })
 
 
-app.post('/api/persons',postLog , (request, response) => {
+app.post('/api/persons',postLog , (request, response, next) => {
   const body = request.body;
   
   if (!body.name || !body.number) {
@@ -81,11 +90,32 @@ app.post('/api/persons',postLog , (request, response) => {
     number: body.number,
   })
 
-  newPerson.save().then(savedPerson => {
+  newPerson.save()
+    .then(savedPerson => {
     response.json(savedPerson)
-    console.log(`(✓) ${savedPerson.name}'s contact info saved in data based`)
-  })
+    console.log(`(✓) Saved ${savedPerson.name} to database`)
+    })
+    .catch(error => next(error))
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error('Error name: ', error.name)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({error: 'malformatted id'})
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json( {error: error.message })
+  }
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server on port: ${PORT}`))
