@@ -15,8 +15,10 @@ const personSchema = mongoose.Schema({
   },
   number: {
     type: String,
-    validate: (v) => /^\d{2,3}-\d{6,}$/.test(v),
-    message: (props) => `${props.value} is not valid. Please follow the format: XX-XXXXXX or XXX-XXXXXX`,
+    validate: {
+      validator: (v) => /^\d{2,3}-\d{6,}$/.test(v),
+      message: (props) => `${props.value} is not valid. Please follow the format: XX-XXXXXX or XXX-XXXXXX`
+    },
     required: [true, 'Contact name is required']
   },
 })
