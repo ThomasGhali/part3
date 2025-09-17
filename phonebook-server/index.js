@@ -1,21 +1,21 @@
 require('dotenv').config()
-const express = require('express');
-const morgan = require('morgan');
-const app = express();
+const express = require('express')
+const morgan = require('morgan')
+const app = express()
 const Person = require('./models/person')
 
 // Parse incoming json requests
-app.use(express.json());
+app.use(express.json())
 // Show front-end static content (build) from 'dist' dir
 app.use(express.static('dist'))
 
 const generalLog = morgan('tiny', {
-  skip: (req, res) => req.method === 'POST'
+  skip: (req) => req.method === 'POST'
 })
 
 // :person custom token
-morgan.token('person', (req, res) => JSON.stringify(req.body))
-const postLog = morgan(':method :url :status :res[content-length] - :response-time[digits] ms :person');
+morgan.token('person', (req) => JSON.stringify(req.body))
+const postLog = morgan(':method :url :status :res[content-length] - :response-time[digits] ms :person')
 
 app.use(generalLog)
 
@@ -32,7 +32,7 @@ app.get('/', (request, response) => {
       <a href="https://carefree-abundance-production.up.railway.app/info">server info</a> 
       page.
     <h2>
-  `);
+  `)
 })
 
 app.get('/api/persons', (request, response, next) => {
@@ -54,7 +54,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response, next) => {
-  const time = new Date();
+  const time = new Date()
   Person.countDocuments()
     .then(count => {
       response.send(`
@@ -78,7 +78,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.post('/api/persons',postLog , (request, response, next) => {
-  const body = request.body;
+  const body = request.body
 
   const newPerson = new Person({
     name: body.name,
@@ -87,8 +87,8 @@ app.post('/api/persons',postLog , (request, response, next) => {
 
   newPerson.save()
     .then(savedPerson => {
-    response.json(savedPerson)
-    console.log(`(✓) Saved ${savedPerson.name} to database`)
+      response.json(savedPerson)
+      console.log(`(✓) Saved ${savedPerson.name} to database`)
     })
     .catch(error => next(error))
 })
@@ -113,7 +113,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 })
 
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint'})
+  response.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
@@ -131,5 +131,5 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => console.log(`Server on port: ${PORT}`))

@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 mongoose.set('strictQuery', false)
 
-const url = process.env.MONGODB_URI;
+const url = process.env.MONGODB_URI
 mongoose.connect(url)
-  .then(result => console.log('✔ Connected to MongoDB'))
+  .then(() => console.log('✔ Connected to MongoDB'))
   .catch(error => console.log('✘ Error connecting to MongoDB: ', error.message))
 
 const personSchema = mongoose.Schema({
